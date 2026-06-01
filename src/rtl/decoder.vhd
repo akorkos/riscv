@@ -16,10 +16,10 @@ end entity decoder;
 
 architecture Rtl of decoder is
 begin
-    opcode  <= instr( 6 downto 0);   -- opcode from instruction
+    opcode  <= instr( 6 downto 0);   
     rd      <= instr(11 downto 7); 
-    funct3  <= instr(14 downto 12);  -- funct3 from instruction
+    funct3  <= instr(14 downto 12);  
     reg1    <= instr(19 downto 15); 
     reg2    <= instr(24 downto 20); 
-    funct7  <= instr(31 downto 25);  -- funct7 from instruction
+    funct7  <= instr(31 downto 25);  
 end architecture Rtl;

@@ -1,33 +1,33 @@
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
+LIBRARY IEEE;
+USE IEEE.STD_LOGIC_1164.ALL;
+USE IEEE.NUMERIC_STD.ALL;
 
-entity mux_wb is
-    port (
-        alu_in      : in std_logic_vector(31 downto 0);
-        pc4         : in std_logic_vector(31 downto 0);
-        imm         : in std_logic_vector(31 downto 0);
-        wb_sel      : in std_logic_vector( 1 downto 0);
-        mem_data_in : in std_logic_vector(31 downto 0); -- Memory data input
-        wb_out      : out std_logic_vector(31 downto 0)
+ENTITY mux_wb IS
+    PORT (
+        alu_in      : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+        pc4         : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+        imm         : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+        wb_sel      : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
+        mem_data_in : IN STD_LOGIC_VECTOR(31 DOWNTO 0); -- Memory data input
+        wb_out      : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
     );
-end entity mux_wb;
+END ENTITY mux_wb;
 
-architecture Rtl of mux_wb is
-begin
-    process(wb_sel, alu_in, pc4, imm)
-    begin
-        case wb_sel is
-            when "00" =>
+ARCHITECTURE Rtl OF mux_wb IS
+BEGIN
+    PROCESS (wb_sel, alu_in, pc4, imm)
+    BEGIN
+        CASE wb_sel IS
+            WHEN "00" =>
                 wb_out <= alu_in;
-            when "01" =>
+            WHEN "01" =>
                 wb_out <= pc4;
-            when "10" =>
+            WHEN "10" =>
                 wb_out <= imm;
-            when "11" =>
+            WHEN "11" =>
                 wb_out <= mem_data_in;
-            when others =>
-                wb_out <= (others => '0');
-        end case;
-    end process;
-end architecture Rtl;
+            WHEN OTHERS       =>
+                wb_out <= (OTHERS => '0');
+        END CASE;
+    END PROCESS;
+END ARCHITECTURE Rtl;

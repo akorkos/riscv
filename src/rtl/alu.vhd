@@ -1,76 +1,80 @@
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+USE ieee.numeric_std.ALL;
 
-entity alu is
-    port (
-        A   : in std_logic_vector(31 downto 0);  -- Source register 1 data
-        B   : in std_logic_vector(31 downto 0);  -- Source register 2 data or immediate
-        F   : in std_logic_vector( 3 downto 0);  -- ALU operation code
-        R   : out std_logic_vector(31 downto 0); -- ALU result output
-        S   : out std_logic_vector(3 downto 0)   -- ALU flags 
+ENTITY alu IS
+    PORT (
+        A : IN STD_LOGIC_VECTOR(31 DOWNTO 0);  -- Source register 1 data
+        B : IN STD_LOGIC_VECTOR(31 DOWNTO 0);  -- Source register 2 data or immediate
+        F : IN STD_LOGIC_VECTOR(3 DOWNTO 0);   -- ALU operation code
+        R : OUT STD_LOGIC_VECTOR(31 DOWNTO 0); -- ALU result output
+        S : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)   -- ALU flags 
     );
-end entity alu;
+END ENTITY alu;
 
-architecture Rtl of alu is
-    signal zero     : std_logic;
-    signal sign     : std_logic;
-    signal overflow : std_logic;
-    signal carry    : std_logic;
+ARCHITECTURE Rtl OF alu IS
+    SIGNAL zero     : STD_LOGIC;
+    SIGNAL sign     : STD_LOGIC;
+    SIGNAL overflow : STD_LOGIC;
+    SIGNAL carry    : STD_LOGIC;
 
-    signal tmp      : std_logic_vector(31 downto 0);
-    signal add_tmp  : std_logic_vector(32 downto 0);
-    signal sub_tmp  : std_logic_vector(32 downto 0);
-begin
-    process (A, B, F)
-    begin
-        add_tmp <= (others => '0');
-        sub_tmp <= (others => '0');
+    SIGNAL tmp     : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL add_tmp : STD_LOGIC_VECTOR(32 DOWNTO 0);
+    SIGNAL sub_tmp : STD_LOGIC_VECTOR(32 DOWNTO 0);
+BEGIN
+    PROCESS (A, B, F)
+    BEGIN
+        add_tmp <= (OTHERS => '0');
+        sub_tmp <= (OTHERS => '0');
 
-        case F is  -- decode the opcode
-            when "0000" =>  tmp <= (others => '0');  
-            when "0001" =>  tmp <= B;   
-            when "0010" =>  tmp <= not A;   
-            when "0011" =>  tmp <= A and B; -- AND  
-            when "0100" =>  tmp <= A or B; -- OR
-            when "0101" =>  tmp <= A xor B; -- XOR
-            when "0110" =>  -- ADD
-                tmp <= std_logic_vector(signed(A) + signed(B));
-                add_tmp <= std_logic_vector(('0' & unsigned(A)) + ('0' & unsigned(B)));
-            when "0111" => -- SUB
-                tmp <= std_logic_vector(signed(A) - signed(B));
-                sub_tmp <= std_logic_vector(('0' & unsigned(A)) - ('0' & unsigned(B)));
-            when "1000" => -- SLL
-                tmp <= <= std_logic_vector(shift_left(unsigned(A), to_integer(unsigned(B(4 downto 0)))));
-            when "1001" => -- SRL
-                tmp <= <= std_logic_vector(shift_right(unsigned(A), to_integer(unsigned(B(4 downto 0)))));
-            when "1010" => -- SRA
-                tmp <= <= std_logic_vector(shift_left(unsigned(A), to_integer(unsigned(B(4 downto 0)))));
-            when "1011" => -- SLT
-                 if signed(A) < signed(B) then
+        CASE F IS -- decode the opcode
+            WHEN "0000" => tmp <= (OTHERS => '0');
+            WHEN "0001" => tmp <= B;
+            WHEN "0010" => tmp <= NOT A;
+            WHEN "0011" => tmp <= A AND B; -- AND  
+            WHEN "0100" => tmp <= A OR B;  -- OR
+            WHEN "0101" => tmp <= A XOR B; -- XOR
+            WHEN "0110" =>                 -- ADD
+                tmp     <= STD_LOGIC_VECTOR(signed(A) + signed(B));
+                add_tmp <= STD_LOGIC_VECTOR(('0' & unsigned(A)) + ('0' & unsigned(B)));
+            WHEN "0111" => -- SUB
+                tmp     <= STD_LOGIC_VECTOR(signed(A) - signed(B));
+                sub_tmp <= STD_LOGIC_VECTOR(('0' & unsigned(A)) - ('0' & unsigned(B)));
+            WHEN "1000" => -- SLL
+                tmp <= STD_LOGIC_VECTOR(shift_left(unsigned(A), to_integer(unsigned(B(4 DOWNTO 0)))));
+            WHEN "1001" => -- SRL
+                tmp <= STD_LOGIC_VECTOR(shift_right(unsigned(A), to_integer(unsigned(B(4 DOWNTO 0)))));
+            WHEN "1010" => -- SRA
+                tmp <= STD_LOGIC_VECTOR(shift_left(unsigned(A), to_integer(unsigned(B(4 DOWNTO 0)))));
+            WHEN "1011" => -- SLT
+                IF signed(A) < signed(B) THEN
                     tmp <= x"00000001";
-                else
+                ELSE
                     tmp <= x"00000000";
-                end if;
-            when "1100" => -- SLTU
-                if unsigned(A) < unsigned(B) then
+                END IF;
+            WHEN "1100" => -- SLTU
+                IF unsigned(A) < unsigned(B) THEN
                     tmp <= x"00000001";
-                else
+                ELSE
                     tmp <= x"00000000";
-                end if;
-        end case;
-    end process;
+                END IF;
+            WHEN OTHERS =>
+                NULL;
+        END CASE;
+    END PROCESS;
 
-    zero <= '1' when tmp = x"00000000" else '0';
-    sign <= tmp(31);
-    overflow <= '1' when
-        (F = "110" and A(31) = B(31) and A(31) /= tmp(31)) or
-        (F = "111" and A(31) /= B(31) and A(31) /= tmp(31))
-        else '0';
-    carry <= add_tmp(32) when F = "110" else
-        sub_tmp(32) when F = "111" else
+    zero <= '1' WHEN tmp = x"00000000" ELSE
         '0';
-    
+    sign     <= tmp(31);
+    overflow <= '1' WHEN
+        (F = "110" AND A(31) = B(31) AND A(31) /= tmp(31)) OR
+        (F = "111" AND A(31) /= B(31) AND A(31) /= tmp(31))
+        ELSE
+        '0';
+    carry <= add_tmp(32) WHEN F = "110" ELSE
+        sub_tmp(32) WHEN F = "111" ELSE
+        '0';
+
     R <= tmp;
     S <= zero & sign & overflow & carry;
-end architecture;
+END ARCHITECTURE;

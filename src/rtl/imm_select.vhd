@@ -18,7 +18,7 @@ BEGIN
     PROCESS (instr)
     BEGIN
         CASE instr(6 DOWNTO 0) IS
-            WHEN I               =>
+            WHEN I =>
                 imm <= (31 DOWNTO 12 => instr(31)) & instr(31 DOWNTO 20);
             WHEN S =>
                 imm <= (31 downto 12 => instr(31)) & instr(31 downto 25) & instr(11 downto 7);

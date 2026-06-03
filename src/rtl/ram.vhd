@@ -8,7 +8,7 @@ entity ram is
     port(
         clk     : in std_logic;
         we      : in std_logic;
-        addr    : in std_logic_vector( 9 downto 0);
+        addr    : in std_logic_vector(31 downto 0);
         din     : in std_logic_vector(31 downto 0);
         dout    : out std_logic_vector(31 downto 0)
     );

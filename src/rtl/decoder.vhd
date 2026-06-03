@@ -1,25 +1,18 @@
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+USE ieee.numeric_std.ALL;
 
-entity decoder is
-    port(
-        instr   : in std_logic_vector(31 downto 0); 
-        opcode  : out std_logic_vector(6 downto 0); 
-        rd      : out std_logic_vector(4 downto 0); -- or imm[4:0]
-        funct3  : out std_logic_vector(2 downto 0); 
-        reg1    : out std_logic_vector(4 downto 0); 
-        reg2    : out std_logic_vector(4 downto 0); 
-        funct7  : out std_logic_vector(6 downto 0) 
+ENTITY decoder IS -- entscheidet, wohin die daten geschickt werden in abhänägigkeit von der Adresse
+    PORT (
+        addr    : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+        mem_we  : OUT STD_LOGIC;
+        uart_we : OUT STD_LOGIC
     );
-end entity decoder;
+END ENTITY decoder;
 
-architecture Rtl of decoder is
-begin
-    opcode  <= instr( 6 downto 0);   
-    rd      <= instr(11 downto 7); 
-    funct3  <= instr(14 downto 12);  
-    reg1    <= instr(19 downto 15); 
-    reg2    <= instr(24 downto 20); 
-    funct7  <= instr(31 downto 25);  
-end architecture Rtl;
+ARCHITECTURE Rtl OF decoder IS
+BEGIN
+    mem_we  <= '1';
+    uart_we <= '1';
+    -- TODO: UART-Adresse
+END ARCHITECTURE Rtl;

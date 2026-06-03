@@ -1,59 +1,59 @@
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
-use work.br_sel.all;
+LIBRARY IEEE;
+USE IEEE.STD_LOGIC_1164.ALL;
+USE IEEE.NUMERIC_STD.ALL;
 
-entity branch_logic is
-    port (
-        reg1    : in std_logic_vector(31 downto 0);
-        reg2    : in std_logic_vector(31 downto 0); 
-        br_sel  : in std_logic_vector( 2 downto 0);
-        br_out  : out std_logic -- branch taken -> 1, 0 for not taken
+ENTITY branch_logic IS
+    PORT (
+        reg1   : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+        reg2   : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+        br_sel : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+        br_out : OUT STD_LOGIC -- branch taken -> 1, 0 for not taken
     );
-end entity branch_logic;
+END ENTITY branch_logic;
 
-architecture Rtl of branch_logic is
-begin
-    process(reg1, reg2, br_sel)
-    begin
-        case br_sel is
-            when "000" => -- BEQ 
-                if reg1 = reg2 then
+ARCHITECTURE Rtl OF branch_logic IS
+BEGIN
+    PROCESS (reg1, reg2, br_sel)
+    BEGIN
+        CASE br_sel IS
+            WHEN "000" => -- BEQ 
+                IF reg1 = reg2 THEN
                     br_out <= '1';
-                else
+                ELSE
                     br_out <= '0';
-                end if;
-
-            when "001" => -- BNE 
-                if reg1 /= reg2 then
+                END IF;
+            WHEN "001" => -- BNE 
+                IF reg1 /= reg2 THEN
                     br_out <= '1';
-                else
+                ELSE
                     br_out <= '0';
-                end if;
-            
-            when "010" => -- BLT 
-                if reg1 < reg2 then
+                END IF;
+            WHEN "100" => -- BLT 
+                IF SIGNED(reg1) < SIGNED(reg2) THEN
                     br_out <= '1';
-                else
+                ELSE
                     br_out <= '0';
-                end if;
-            
-            when "011" => -- BGE 
-                if reg1 >= reg2 then
+                END IF;
+            WHEN "101" => -- BGE 
+                IF SIGNED(reg1) >= SIGNED(reg2) THEN
                     br_out <= '1';
-                else
+                ELSE
                     br_out <= '0';
-                end if;
-            
-            when "100" => -- BNEZ 
-                if reg1 /= x"00000000" then
+                END IF;
+            WHEN "110" => -- bltu
+                IF UNSIGNED(reg1) < UNSIGNED(reg2) THEN
                     br_out <= '1';
-                else
+                ELSE
                     br_out <= '0';
-                end if;
-
-            when others =>
+                END IF;
+            WHEN "111" => -- bgeu
+                IF UNSIGNED(reg1) >= UNSIGNED(reg2) THEN
+                    br_out <= '1';
+                ELSE
+                    br_out <= '0';
+                END IF;
+            WHEN OTHERS =>
                 br_out <= '0'; -- no branch taken
-        end case;
-    end process;
-end architecture Rtl;
+        END CASE;
+    END PROCESS;
+END ARCHITECTURE Rtl;

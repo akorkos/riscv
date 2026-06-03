@@ -12,13 +12,12 @@ END mux_rd2;
 ARCHITECTURE Behavioral OF mux_rd2 IS
     CONSTANT I : STD_LOGIC_VECTOR(6 DOWNTO 0) := "0010011";
 BEGIN
-    PROCESS (opcode)
+    PROCESS (opcode, imm, reg)
     BEGIN
         IF opcode = I THEN
             rd2 <= imm;
         ELSE
             rd2 <= reg;
         END IF;
-
     END PROCESS;
 END Behavioral;

@@ -17,26 +17,25 @@ ENTITY register_file IS
 END register_file;
 
 ARCHITECTURE Behavioral OF register_file IS
-    TYPE registerFile IS ARRAY(1 TO 31) OF STD_LOGIC_VECTOR(31 DOWNTO 0);
-    SIGNAL registers : registerFile;
+    TYPE registerFile IS ARRAY(0 TO 31) OF STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL registers : registerFile := (OTHERS => (OTHERS => '0'));
 BEGIN
+
+    rd1 <= (OTHERS => '0') WHEN rs1 = "00000"
+        ELSE
+        registers(to_integer(unsigned(rs1)));
+
+    rd2 <= (OTHERS => '0') WHEN rs2 = "00000"
+        ELSE
+        registers(to_integer(unsigned(rs2)));
+
     PROCESS (clk)
     BEGIN
         IF rising_edge(clk) THEN
-            IF rs1 = "00000" THEN
-                rd1 <= (OTHERS => '0');
-            ELSE
-                rd1 <= registers(to_integer(unsigned(rs1)));
-            END IF;
-            IF rs2 = "00000" THEN
-                rd2 <= (OTHERS => '0');
-            ELSE
-                rd2 <= registers(to_integer(unsigned(rs2)));
-            END IF;
-
             IF we = '1' AND wa /= "00000" THEN
                 registers(to_integer(unsigned(wa))) <= wd;
             END IF;
         END IF;
     END PROCESS;
+
 END Behavioral;

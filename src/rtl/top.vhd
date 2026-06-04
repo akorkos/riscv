@@ -4,7 +4,6 @@ USE IEEE.STD_LOGIC_1164.ALL;
 ENTITY top IS
     PORT (
         clk : IN STD_LOGIC
-
     );
 END top;
 

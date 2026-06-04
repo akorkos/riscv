@@ -4,11 +4,12 @@ USE IEEE.NUMERIC_STD.ALL;
 
 ENTITY register_file IS
     PORT (
-        clk : IN STD_LOGIC;
-        rs1 : IN STD_LOGIC_VECTOR(4 DOWNTO 0);   -- operand read address 1
-        rs2 : IN STD_LOGIC_VECTOR(4 DOWNTO 0);   -- operand read address 2
-        rd1 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0); -- register data 1
-        rd2 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0); -- register data 2
+        reset : IN STD_LOGIC;
+        clk   : IN STD_LOGIC;
+        rs1   : IN STD_LOGIC_VECTOR(4 DOWNTO 0);   -- operand read address 1
+        rs2   : IN STD_LOGIC_VECTOR(4 DOWNTO 0);   -- operand read address 2
+        rd1   : OUT STD_LOGIC_VECTOR(31 DOWNTO 0); -- register data 1
+        rd2   : OUT STD_LOGIC_VECTOR(31 DOWNTO 0); -- register data 2
 
         we : IN STD_LOGIC;                    -- write enable
         wa : IN STD_LOGIC_VECTOR(4 DOWNTO 0); -- write address
@@ -37,5 +38,4 @@ BEGIN
             END IF;
         END IF;
     END PROCESS;
-
 END Behavioral;

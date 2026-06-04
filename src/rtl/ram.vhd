@@ -23,7 +23,7 @@ BEGIN
     BEGIN
         IF rising_edge(clk) THEN
 
-            a := to_integer(unsigned(addr(31 downto 2)));
+            a := to_integer(unsigned(addr(8 DOWNTO 2)));
 
             IF we = '1' THEN
                 IF byte_enable(0) = '1' THEN
@@ -42,12 +42,18 @@ BEGIN
                     RAM(a * 4 + 3) <= din(31 DOWNTO 24);
                 END IF;
             END IF;
-
-            dout(7 DOWNTO 0)   <= RAM(a * 4 + 0);
-            dout(15 DOWNTO 8)  <= RAM(a * 4 + 1);
-            dout(23 DOWNTO 16) <= RAM(a * 4 + 2);
-            dout(31 DOWNTO 24) <= RAM(a * 4 + 3);
         END IF;
+    END PROCESS;
+
+    PROCESS (RAM, addr)
+        VARIABLE a : INTEGER;
+    BEGIN
+        a := to_integer(unsigned(addr(8 DOWNTO 2)));
+
+        dout(7 DOWNTO 0)   <= RAM(a * 4 + 0);
+        dout(15 DOWNTO 8)  <= RAM(a * 4 + 1);
+        dout(23 DOWNTO 16) <= RAM(a * 4 + 2);
+        dout(31 DOWNTO 24) <= RAM(a * 4 + 3);
     END PROCESS;
 
 END ARCHITECTURE;

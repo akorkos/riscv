@@ -18,6 +18,7 @@ ARCHITECTURE Behavioral OF top IS
             instr_addr : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
 
             mem_data_in  : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+            byte_enable  : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
             mem_data_out : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
             mem_addr     : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
         );
@@ -37,11 +38,12 @@ ARCHITECTURE Behavioral OF top IS
     END COMPONENT;
     COMPONENT ram IS
         PORT (
-            clk  : IN STD_LOGIC;
-            we   : IN STD_LOGIC;
-            addr : IN STD_LOGIC_VECTOR(9 DOWNTO 0);
-            din  : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-            dout : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
+            clk         : IN STD_LOGIC;
+            addr        : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+            din         : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+            dout        : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+            we          : IN STD_LOGIC;
+            byte_enable : IN STD_LOGIC_VECTOR(3 DOWNTO 0)
         );
     END COMPONENT;
 
@@ -50,8 +52,9 @@ ARCHITECTURE Behavioral OF top IS
     SIGNAL instr      : STD_LOGIC_VECTOR(31 DOWNTO 0);
     SIGNAL instr_addr : STD_LOGIC_VECTOR(31 DOWNTO 0);
 
-    SIGNAL mem_we  : STD_LOGIC;
-    SIGNAL uart_we : STD_LOGIC;
+    SIGNAL mem_we      : STD_LOGIC;
+    SIGNAL uart_we     : STD_LOGIC;
+    SIGNAL byte_enable : STD_LOGIC_VECTOR(3 DOWNTO 0);
 
     SIGNAL mem_data_in  : STD_LOGIC_VECTOR(31 DOWNTO 0);
     SIGNAL mem_data_out : STD_LOGIC_VECTOR(31 DOWNTO 0);
@@ -65,6 +68,7 @@ BEGIN
             instr        => instr,
             instr_addr   => instr_addr,
             mem_data_in  => mem_data_in,
+            byte_enable => byte_enable,
             mem_data_out => mem_data_out,
             mem_addr     => mem_addr
         );
@@ -81,12 +85,13 @@ BEGIN
             mem_we  => mem_we,
             uart_we => uart_we
         );
-    ram_comp: entity work.ram
-     port map(
-        clk => clk,
-        we => mem_we,
-        addr => mem_addr,
-        din => mem_data_out,
-        dout => mem_data_in
-    );
+    ram_comp : ENTITY work.ram
+        PORT MAP(
+            clk         => clk,
+            we          => mem_we,
+            byte_enable => byte_enable,
+            addr        => mem_addr,
+            din         => mem_data_out,
+            dout        => mem_data_in
+        );
 END Behavioral;

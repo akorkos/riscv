@@ -1,6 +1,8 @@
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 
+USE work.riscv_consts.ALL;
+
 ENTITY mux_rd2 IS
     PORT (
         opcode : IN STD_LOGIC_VECTOR(6 DOWNTO 0);
@@ -14,10 +16,11 @@ ARCHITECTURE Behavioral OF mux_rd2 IS
 BEGIN
     PROCESS (opcode, imm, reg)
     BEGIN
-        IF opcode = I THEN
-            rd2 <= imm;
-        ELSE
-            rd2 <= reg;
-        END IF;
+        CASE opcode IS
+            WHEN OP_IMM | LOAD | STORE =>
+                rd2 <= imm;
+            WHEN OTHERS =>
+                rd2 <= reg;
+        END CASE;
     END PROCESS;
 END Behavioral;

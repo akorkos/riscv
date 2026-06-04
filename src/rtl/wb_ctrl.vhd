@@ -1,6 +1,8 @@
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 
+USE work.riscv_consts.ALL;
+
 ENTITY wb_ctrl IS
     PORT (
         opcode : IN STD_LOGIC_VECTOR (6 DOWNTO 0);
@@ -17,11 +19,22 @@ BEGIN
     PROCESS (opcode)
     BEGIN
         CASE opcode IS
-            WHEN R =>
+            WHEN OP =>
                 sel <= "00"; -- alu
-            when I =>
+            WHEN OP_IMM =>
                 sel <= "00"; -- alu
-            -- TODO: sel ist nicht nur von opcode abhängig: lb etc -> mem, lui -> imm, jal -> PC
+            WHEN LOAD =>
+                sel <= "11"; -- mem
+            WHEN LUI =>
+                sel <= "10"; -- imm
+            WHEN AUIPC =>
+                NULL;
+                sel <= "00"; -- alu
+            WHEN JAL =>
+                sel <= "01"; -- pc+4
+            WHEN JALR =>
+                sel <= "01"; -- pc+4
+                -- TODO: sel ist nicht nur von opcode abhängig: lb etc -> mem, lui -> imm, jal -> PC
             WHEN OTHERS =>
                 NULL;
         END CASE;

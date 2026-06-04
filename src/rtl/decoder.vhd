@@ -12,7 +12,7 @@ END ENTITY decoder;
 
 ARCHITECTURE Rtl OF decoder IS
 BEGIN
-    mem_we  <= '1';
+    mem_we  <= '1'; -- TODO: Write enable in abhängigkeit von instr
     uart_we <= '1';
     -- TODO: UART-Adresse
 END ARCHITECTURE Rtl;

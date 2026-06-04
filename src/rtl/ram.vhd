@@ -1,31 +1,53 @@
--- https://docs.amd.com/r/en-US/ug901-vivado-synthesis/Dual-Port-RAM-with-Asynchronous-Read-Coding-Verilog-Example
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+USE ieee.numeric_std.ALL;
 
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
-
-entity ram is
-    port(
-        clk     : in std_logic;
-        we      : in std_logic;
-        addr    : in std_logic_vector(31 downto 0);
-        din     : in std_logic_vector(31 downto 0);
-        dout    : out std_logic_vector(31 downto 0)
+ENTITY ram IS
+    PORT (
+        clk         : IN STD_LOGIC;
+        addr        : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+        din         : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+        dout        : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+        we          : IN STD_LOGIC;
+        byte_enable : IN STD_LOGIC_VECTOR(3 DOWNTO 0)
     );
-end ram;
+END ENTITY;
 
-architecture Rtl of ram is
-    type ram_type is array ((2**10)-1 downto 0) of std_logic_vector(31 downto 0);
-    signal RAM : ram_type;
-begin
-    process(clk)
-    begin
-        if rising_edge(clk) then
-            if (we = '1') then
-                RAM(to_integer(unsigned(addr))) <= din;
-            end if;
-            
-            dout <= RAM(to_integer(unsigned(addr)));
-        end if;
-end process;
-end Rtl;
+ARCHITECTURE rtl OF ram IS
+    TYPE ram_type IS ARRAY (0 TO (2 ** 10) - 1) OF STD_LOGIC_VECTOR(7 DOWNTO 0);
+    SIGNAL RAM : ram_type := (OTHERS => (OTHERS => '0'));
+BEGIN
+
+    PROCESS (clk)
+        VARIABLE a : INTEGER;
+    BEGIN
+        IF rising_edge(clk) THEN
+
+            a := to_integer(unsigned(addr(31 downto 2)));
+
+            IF we = '1' THEN
+                IF byte_enable(0) = '1' THEN
+                    RAM(a * 4 + 0) <= din(7 DOWNTO 0);
+                END IF;
+
+                IF byte_enable(1) = '1' THEN
+                    RAM(a * 4 + 1) <= din(15 DOWNTO 8);
+                END IF;
+
+                IF byte_enable(2) = '1' THEN
+                    RAM(a * 4 + 2) <= din(23 DOWNTO 16);
+                END IF;
+
+                IF byte_enable(3) = '1' THEN
+                    RAM(a * 4 + 3) <= din(31 DOWNTO 24);
+                END IF;
+            END IF;
+
+            dout(7 DOWNTO 0)   <= RAM(a * 4 + 0);
+            dout(15 DOWNTO 8)  <= RAM(a * 4 + 1);
+            dout(23 DOWNTO 16) <= RAM(a * 4 + 2);
+            dout(31 DOWNTO 24) <= RAM(a * 4 + 3);
+        END IF;
+    END PROCESS;
+
+END ARCHITECTURE;

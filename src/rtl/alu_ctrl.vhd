@@ -1,6 +1,8 @@
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 
+USE work.riscv_consts.ALL;
+
 ENTITY alu_ctrl IS
     PORT (
         opcode : IN STD_LOGIC_VECTOR(6 DOWNTO 0);
@@ -11,17 +13,11 @@ ENTITY alu_ctrl IS
 END alu_ctrl;
 
 ARCHITECTURE Behavioral OF alu_ctrl IS
-    CONSTANT R : STD_LOGIC_VECTOR(6 DOWNTO 0) := "0110011";
-    CONSTANT I : STD_LOGIC_VECTOR(6 DOWNTO 0) := "0010011";
-    CONSTANT S : STD_LOGIC_VECTOR(6 DOWNTO 0) := "0100011";
-    CONSTANT U : STD_LOGIC_VECTOR(6 DOWNTO 0) := "0110111";
-    CONSTANT B : STD_LOGIC_VECTOR(6 DOWNTO 0) := "1100011";
-    CONSTANT J : STD_LOGIC_VECTOR(6 DOWNTO 0) := "1101111";
 BEGIN
     PROCESS (opcode, f3, f7)
     BEGIN
         CASE opcode IS
-            WHEN R =>
+            WHEN OP =>
                 IF f3 = "000" AND f7 = "0000000" THEN
                     -- add
                     f <= "0110";
@@ -53,7 +49,7 @@ BEGIN
                     -- and
                     f <= "0011";
                 END IF;
-            WHEN I =>
+            WHEN OP_IMM =>
                 IF f3 = "000" THEN
                     -- addi
                     f <= "0110";
@@ -81,6 +77,18 @@ BEGIN
                 ELSIF f3 = "111" THEN
                     -- andi
                     f <= "0011";
+                END IF;
+            WHEN LOAD =>
+                IF f3 = "000" THEN
+                    f <= "0110";
+                ELSIF f3 = "001" THEN
+                    f <= "0110";
+                ELSIF f3 = "010" THEN
+                    f <= "0110";
+                ELSIF f3 = "100" THEN
+                    f <= "0110";
+                ELSIF f3 = "101" THEN
+                    f <= "0110";
                 END IF;
             WHEN OTHERS =>
                 NULL;

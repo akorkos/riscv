@@ -10,6 +10,7 @@ ENTITY core IS
         instr_addr : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
 
         mem_data_in  : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+        byte_enable  : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
         mem_data_out : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
         mem_addr     : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
     );
@@ -90,6 +91,21 @@ ARCHITECTURE Behavioral OF core IS
             wb_out      : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
         );
     END COMPONENT;
+    COMPONENT read_ctrl IS
+        PORT (
+            mem_data_in : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+            opcode      : IN STD_LOGIC_VECTOR(6 DOWNTO 0);
+            f3          : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+            mem_wb_data : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
+        );
+    END COMPONENT;
+    COMPONENT write_ctrl IS
+        PORT (
+            opcode      : IN STD_LOGIC_VECTOR(6 DOWNTO 0);
+            f3          : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+            byte_enable : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)
+        );
+    END COMPONENT;
 
     SIGNAL instr_reg : STD_LOGIC_VECTOR(31 DOWNTO 0);
 
@@ -109,6 +125,8 @@ ARCHITECTURE Behavioral OF core IS
 
     SIGNAL pc4 : STD_LOGIC_VECTOR(31 DOWNTO 0);
     SIGNAL wd  : STD_LOGIC_VECTOR(31 DOWNTO 0);
+
+    SIGNAL mem_wb_data : STD_LOGIC_VECTOR(31 DOWNTO 0);
 
 BEGIN
     register_file_comp : ENTITY work.register_file
@@ -136,7 +154,7 @@ BEGIN
         PORT MAP(
             reg1   => rd1,
             reg2   => rd2,
-            br_sel => instr_reg(14 downto 12),
+            br_sel => instr_reg(14 DOWNTO 12),
             br_out => br_taken
         );
     mux_rd2_comp : ENTITY work.mux_rd2
@@ -171,8 +189,21 @@ BEGIN
             pc4         => pc4,
             imm         => imm,
             wb_sel      => wb_sel,
-            mem_data_in => mem_data_in,
+            mem_data_in => mem_wb_data,
             wb_out      => wd
+        );
+    read_ctrl_inst : ENTITY work.read_ctrl
+        PORT MAP(
+            mem_data_in => mem_data_in,
+            opcode      => instr_reg(6 DOWNTO 0),
+            f3          => instr_reg(14 DOWNTO 12),
+            mem_wb_data => mem_wb_data
+        );
+    write_ctrl_inst : ENTITY work.write_ctrl
+        PORT MAP(
+            opcode      => instr_reg(6 DOWNTO 0),
+            f3          => instr_reg(14 DOWNTO 12),
+            byte_enable => byte_enable
         );
 
     mem_addr     <= alu_res;

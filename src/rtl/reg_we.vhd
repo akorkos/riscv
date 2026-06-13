@@ -16,7 +16,7 @@ BEGIN
     PROCESS (opcode)
     BEGIN
         CASE opcode IS
-            WHEN Op | OP_IMM | LOAD | AUIPC | JAL | JALR =>
+            WHEN Op | OP_IMM | LOAD | LUI | AUIPC | JAL | JALR =>
                 we <= '1';
             WHEN OTHERS =>
                 we <= '0';

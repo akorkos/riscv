@@ -24,14 +24,13 @@ BEGIN
             WHEN LUI =>
                 sel <= "10"; -- imm
             WHEN AUIPC =>
-                NULL;
-                -- ?????
+                sel <= "00";
             WHEN JAL =>
                 sel <= "01"; -- pc+4
             WHEN JALR =>
                 sel <= "01"; -- pc+4
             WHEN OTHERS =>
-                NULL;
+                sel <= "00";
         END CASE;
     END PROCESS;
 END Behavioral;

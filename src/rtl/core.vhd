@@ -5,6 +5,7 @@ ENTITY core IS
     PORT (
         reset : IN STD_LOGIC;
         clk   : IN STD_LOGIC;
+        clki  : IN STD_LOGIC;
 
         instr      : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
         instr_addr : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
@@ -38,10 +39,12 @@ ARCHITECTURE Behavioral OF core IS
         PORT (
             reset : IN STD_LOGIC;
             clk   : IN STD_LOGIC;
-            rs1   : IN STD_LOGIC_VECTOR(4 DOWNTO 0);
-            rs2   : IN STD_LOGIC_VECTOR(4 DOWNTO 0);
-            rd1   : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-            rd2   : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+            clki  : IN STD_LOGIC;
+
+            rs1 : IN STD_LOGIC_VECTOR(4 DOWNTO 0);
+            rs2 : IN STD_LOGIC_VECTOR(4 DOWNTO 0);
+            rd1 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+            rd2 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
 
             we : IN STD_LOGIC;
             wa : IN STD_LOGIC_VECTOR(4 DOWNTO 0);
@@ -96,7 +99,7 @@ ARCHITECTURE Behavioral OF core IS
     COMPONENT wb_ctrl IS
         PORT (
             opcode : IN STD_LOGIC_VECTOR(6 DOWNTO 0);
-            sel    : IN STD_LOGIC_VECTOR(1 DOWNTO 0)
+            sel    : OUT STD_LOGIC_VECTOR(1 DOWNTO 0)
         );
     END COMPONENT;
     COMPONENT mux_wb IS
@@ -168,6 +171,7 @@ BEGIN
         PORT MAP(
             reset => reset,
             clk   => clk,
+            -- clki  => clki,
             rs1   => instr(19 DOWNTO 15),
             rs2   => instr(24 DOWNTO 20),
             rd1   => rd1,

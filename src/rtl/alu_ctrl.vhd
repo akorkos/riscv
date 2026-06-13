@@ -16,6 +16,7 @@ ARCHITECTURE Behavioral OF alu_ctrl IS
 BEGIN
     PROCESS (opcode, f3, f7)
     BEGIN
+        f <= "0000";
         CASE opcode IS
             WHEN OP =>
                 IF f3 = "000" AND f7 = "0000000" THEN
@@ -90,8 +91,10 @@ BEGIN
                 ELSIF f3 = "101" THEN
                     f <= "0110";
                 END IF;
+            WHEN STORE =>
+                f <= "0110";
             WHEN OTHERS =>
-                NULL;
+                f <= "0000";
         END CASE;
     END PROCESS;
 END Behavioral;

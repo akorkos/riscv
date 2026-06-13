@@ -6,13 +6,30 @@ ENTITY decoder IS -- entscheidet, wohin die daten geschickt werden in abhänägi
     PORT (
         addr    : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
         mem_we  : OUT STD_LOGIC;
-        uart_we : OUT STD_LOGIC
+        uart_we : OUT STD_LOGIC;
+        led_we  : OUT STD_LOGIC
     );
 END ENTITY decoder;
 
-ARCHITECTURE Rtl OF decoder IS
+ARCHITECTURE rtl OF decoder IS
+    CONSTANT led_addr  : UNSIGNED(31 DOWNTO 0) := x"02000000";
+    CONSTANT uart_addr : UNSIGNED(31 DOWNTO 0) := x"02000004";
 BEGIN
-    mem_we  <= '1'; -- TODO: Write enable in abhängigkeit von instr
-    uart_we <= '1';
-    -- TODO: UART-Adresse
-END ARCHITECTURE Rtl;
+    PROCESS (addr)
+        VARIABLE a : UNSIGNED(31 DOWNTO 0);
+    BEGIN
+        a := UNSIGNED(addr);
+
+        mem_we  <= '0';
+        led_we  <= '0';
+        uart_we <= '0';
+
+        IF a < led_addr THEN
+            mem_we <= '1';
+        ELSIF a < uart_addr THEN
+            led_we  <= '1';
+        ELSIF a <= uart_addr + 4 THEN
+            uart_we <= '1';
+        END IF;
+    END PROCESS;
+END ARCHITECTURE;
